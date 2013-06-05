@@ -11,8 +11,6 @@ import com.gc.android.market.api.model.Market.App.ExtendedInfo;
 import com.gc.android.market.api.model.Market.AppsRequest;
 import com.gc.android.market.api.model.Market.AppsResponse;
 import com.gc.android.market.api.model.Market.ResponseContext;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 /**
  *
