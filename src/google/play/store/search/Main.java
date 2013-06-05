@@ -9,7 +9,7 @@ package google.play.store.search;
 public class Main {
 
     public Main() {
-        new GooglePlayStoreSearch();
+        new MainJFrame().setVisible(true);
     }
     
     
