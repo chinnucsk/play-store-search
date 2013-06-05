@@ -4,17 +4,30 @@
  */
 package google.play.store.search;
 
+import com.gc.android.market.api.MarketSession;
+import com.gc.android.market.api.MarketSession.Callback;
+import com.gc.android.market.api.model.Market.App;
+import com.gc.android.market.api.model.Market.App.ExtendedInfo;
+import com.gc.android.market.api.model.Market.AppsRequest;
+import com.gc.android.market.api.model.Market.AppsResponse;
+import com.gc.android.market.api.model.Market.ResponseContext;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 /**
  *
  * @author javierAle
  */
 public class MainJFrame extends javax.swing.JFrame {
-
+    MarketSession session;
     /**
      * Creates new form MainJFrame
      */
     public MainJFrame() {
+        
         initComponents();
+        session = new MarketSession();
+        session.login(User.EMAIL, User.PSWRD);
     }
 
     /**
@@ -28,6 +41,7 @@ public class MainJFrame extends javax.swing.JFrame {
 
         searchButton = new javax.swing.JButton();
         searchTextField = new javax.swing.JTextField();
+        resultLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -42,21 +56,26 @@ public class MainJFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .add(59, 59, 59)
-                .add(searchTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
-                .add(18, 18, 18)
-                .add(searchButton)
-                .add(53, 53, 53))
+            .add(layout.createSequentialGroup()
+                .add(12, 12, 12)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(resultLabel)
+                    .add(layout.createSequentialGroup()
+                        .add(searchTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 271, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(searchButton)))
+                .addContainerGap(26, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
-                .add(120, 120, 120)
+                .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(searchButton)
-                    .add(searchTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(150, Short.MAX_VALUE))
+                    .add(searchTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(searchButton))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(resultLabel)
+                .addContainerGap(258, Short.MAX_VALUE))
         );
 
         pack();
@@ -64,6 +83,29 @@ public class MainJFrame extends javax.swing.JFrame {
 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
         // TODO add your handling code here:
+        String query = searchTextField.getText();
+        AppsRequest appsRequest = AppsRequest.newBuilder()
+                                        .setQuery(query)
+                                        .setStartIndex(0).setEntriesCount(10)
+                                        .setWithExtendedInfo(true)
+                                        .build();
+
+        session.append(appsRequest, new Callback<AppsResponse>() {
+            @Override
+            public void onResult(ResponseContext rc, AppsResponse t) {
+                //throw new UnsupportedOperationException("Not supported yet.");
+                
+                System.out.println("OK");
+                System.out.println(t.getApp(0));
+                App app = t.getApp(0);
+                ExtendedInfo extInfo = app.getExtendedInfo();
+                System.out.println(extInfo.getPermissionIdCount());
+                
+            }
+        });
+        
+        
+        session.flush();
     }//GEN-LAST:event_searchButtonActionPerformed
 
     /**
@@ -101,6 +143,7 @@ public class MainJFrame extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel resultLabel;
     private javax.swing.JButton searchButton;
     private javax.swing.JTextField searchTextField;
     // End of variables declaration//GEN-END:variables
